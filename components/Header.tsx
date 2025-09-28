@@ -1,0 +1,28 @@
+import React from 'react'
+import Link from 'next/link'
+
+import NavItems from './NavItems'
+import UserDropdown from './general/UserDropdown'
+
+const Header = () => {
+  return (
+	<header className='sticky top-0 header'>
+		<div className="container header-wrapper">
+			<Link href="/" className='text-2xl font-bold'>
+				Logo
+			</Link>
+
+			{/* Desktop Nav */}
+			<nav className="hidden sm:block">
+				<NavItems />
+			</nav>
+
+			{/* Mobile Nav */}
+			<UserDropdown />
+
+		</div>
+	</header>
+  )
+}
+
+export default Header
