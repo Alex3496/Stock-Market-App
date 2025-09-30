@@ -34,3 +34,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Important Libreries or External Services used in this project
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) - Cloud database service
+- [Mongoose](https://mongoosejs.com/) - Elegant MongoDB object modeling for Node
+- [coderabbit](https://www.coderabbit.ai/) - AI Code Reviewer in GitHub
+- [Better-auth](https://betterauth.dev/) - OAth provider
