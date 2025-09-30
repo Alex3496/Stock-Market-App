@@ -5,8 +5,6 @@ import { useForm } from 'react-hook-form';
 
 //components
 import InputField from '@/components/forms/InputField';
-import SelectField from '@/components/forms/SelectField';
-import { INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS } from '@/lib/constants';
 import FooterLinks from '@/components/forms/FooterLinks';
 
 const page = () => {
@@ -16,20 +14,15 @@ const page = () => {
 		handleSubmit, // Función para manejar el envío del formulario
 		control, // Control para campos controlados
 		formState: { errors, isSubmitting } // Estado del formulario, incluyendo errores y estado de envío
-	} = useForm<SignUpFormData>({
+	} = useForm<SignInFormData>({
 		mode: 'onBlur', // Validación al perder el foco
 		defaultValues: {
-			fullName: '',
 			email: '',
 			password: '',
-			country: 'US',
-			investmentGoals: 'Growth',
-			riskTolerance: 'Medium',
-			preferredIndustry: 'Technology'
 		}
 	});
 
-	const onSubmit = async (data: SignUpFormData) => {
+	const onSubmit = async (data: SignInFormData) => {
 		try {
 			// Lógica para manejar el envío del formulario, como llamar a una API
 			console.log('Form Data:', data);
