@@ -6,7 +6,7 @@ import React from 'react'
 const layout = ({ children } : { children: React.ReactNode }) => {
   return (
 	<main className='auth-layout'>
-		<section className='auth-left-section scrollbar-hide-default'>
+		<section className='auth-left-section scrollbar-hide-defaults min-h-screen'>
 			<Link href='/' className='auth-logo'>Logo</Link>
 			<div className="pb-6 lg:pb-8 flex-1">
 				{children}
