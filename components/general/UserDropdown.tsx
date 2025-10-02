@@ -13,17 +13,19 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { LogOut } from "lucide-react";
 import NavItems from "../NavItems";
+import { signOut } from "@/lib/actions/auth.actions";
 
-const UserDropdown = () => {
+const UserDropdown = ({user} : {user: User | null}) => {
 
 	const router = useRouter();
 
-	const handleLogout = () => {
+	const handleLogout = async () => {
 		// Perform logout logic
-		router.push("/login");
+		await signOut();
+		// Redirect to login page or homepage after logout
+		router.push("/");
 	}
 
-	const user = { name: "John Doe" , email: "ale@example.com"};
 
   	return (
 		<DropdownMenu>
@@ -31,10 +33,10 @@ const UserDropdown = () => {
 				<Button variant="ghost" className="flex items-center gap-3 text-gray-400 hover:text-yellow-500">
 					<Avatar className="h-8 w-8">
 						<AvatarImage src="/path/to/avatar.jpg" alt="User Avatar" />
-						<AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">{user.name.charAt(0)}</AvatarFallback>
+						<AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">{user?.name.charAt(0)}</AvatarFallback>
 					</Avatar>
 					<div className="hidden md:flex flex-col item-start">
-						<span className="text-base font-medium text-gray-400">{user.name}</span>
+						<span className="text-base font-medium text-gray-400">{user?.name}</span>
 					</div>
 				</Button>
 			</DropdownMenuTrigger>
@@ -43,11 +45,11 @@ const UserDropdown = () => {
 					<div className="flex relative items-center gap-3 py-2">
 						<Avatar className="h-8 w-8">
 							<AvatarImage src="/path/to/avatar.jpg" alt="User Avatar" />
-							<AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">{user.name.charAt(0)}</AvatarFallback>
+							<AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">{user?.name.charAt(0)}</AvatarFallback>
 						</Avatar>
 						<div className="flex flex-col">
-							<span className="text-base font-medium text-gray-400">{user.name}</span>
-							<span className="text-sm text-gray-500">{user.email}</span>
+							<span className="text-base font-medium text-gray-400">{user?.name}</span>
+							<span className="text-sm text-gray-500">{user?.email}</span>
 						</div>
 					</div>
 				</DropdownMenuLabel>

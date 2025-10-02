@@ -6,9 +6,12 @@ import { useForm } from 'react-hook-form';
 //components
 import InputField from '@/components/forms/InputField';
 import FooterLinks from '@/components/forms/FooterLinks';
+import { signInWithEmail } from '@/lib/actions/auth.actions';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const page = () => {
-
+	const router = useRouter()
 	const {
 		register, // Hook para registrar campos en el formulario
 		handleSubmit, // Función para manejar el envío del formulario
@@ -26,8 +29,16 @@ const page = () => {
 		try {
 			// Lógica para manejar el envío del formulario, como llamar a una API
 			console.log('Form Data:', data);
+
+			const result = await signInWithEmail(data);
+
+			if(result.success){
+				return router.push('/')
+			}
+
 		} catch (error) {
 			console.error('Error submitting form:', error);
+			toast.error('There was an error submitting the form. Please try again.');
 		}
 	}
 
