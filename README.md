@@ -43,3 +43,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - [Inngest](https://www.inngest.com/) - Serverless functions and background jobs
 - [Google Ai Studio (api key)](https://aistudio.google.com) - AI Text generation (like ChatGPT)
 - [Nodemailer](https://nodemailer.com/about/) - Email sending library for Node.js
+- [Google App Passwords]() - To allow Nodemailer to send emails using Gmail SMTP

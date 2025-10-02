@@ -2,15 +2,19 @@
 import { Button } from '@/components/ui/button';
 import React from 'react'
 import { useForm } from 'react-hook-form';
+import { toast } from "sonner"
 
 //components
 import InputField from '@/components/forms/InputField';
 import SelectField from '@/components/forms/SelectField';
 import { INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS } from '@/lib/constants';
 import FooterLinks from '@/components/forms/FooterLinks';
+import { signUpWithEmail } from '@/lib/actions/auth.actions';
+import { useRouter } from 'next/navigation';
 
 const page = () => {
 
+	const router = useRouter()
 	const {
 		register, // Hook para registrar campos en el formulario
 		handleSubmit, // Función para manejar el envío del formulario
@@ -32,6 +36,12 @@ const page = () => {
 	const onSubmit = async (data: SignUpFormData) => {
 		try {
 			// Lógica para manejar el envío del formulario, como llamar a una API
+
+			const result = await signUpWithEmail(data);
+			if(result.success){
+				toast.success('Sign up successful! Please check your email for a welcome message.');
+			}
+
 			console.log('Form Data:', data);
 		} catch (error) {
 			console.error('Error submitting form:', error);
