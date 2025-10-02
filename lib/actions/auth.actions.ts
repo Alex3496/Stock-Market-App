@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/better-auth/auth";
 import { inngest } from "../inngest/client";
-import { email } from "better-auth";
+import { headers } from "next/headers";
 
 export const signUpWithEmail = async ({ email, password, fullName, country, investmentGoals, riskTolerance, preferredIndustry }: SignUpFormData) => {
 
@@ -50,4 +50,36 @@ export const signUpWithEmail = async ({ email, password, fullName, country, inve
 		return { success: false, message: 'Error signing up' };
 	}
 
+}
+
+export const signInWithEmail = async ({ email, password }: SignInFormData) => {
+
+	try{
+
+
+		const  response = await auth.api.signInEmail({
+			body: {
+				email,
+				password,
+			}
+		})
+
+		return { success: true, data: response };
+
+	}catch(err){
+		console.log('SignUp Error:',err);
+		return { success: false, message: 'Error signing up' };
+	}
+
+}
+
+export const signOut = async () => {
+	try {
+		await auth.api.signOut({
+			headers: await headers()
+		});
+	} catch (error) {
+		console.log('SignOut Error:',error);
+		return { success: false, message: 'Error signing out' };
+	}
 }

@@ -1,9 +1,22 @@
 
+import { Toaster } from '@/components/ui/sonner'
+import { auth } from '@/lib/better-auth/auth'
+import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-const layout = ({ children } : { children: React.ReactNode }) => {
+const layout = async ({ children } : { children: React.ReactNode }) => {
+
+	const session = await auth.api.getSession({
+		headers: await headers()
+	})
+
+	if(session?.user){
+		redirect('/')
+	}
+
   return (
 	<main className='auth-layout'>
 		<section className='auth-left-section scrollbar-hide-defaults min-h-screen'>
@@ -23,6 +36,7 @@ const layout = ({ children } : { children: React.ReactNode }) => {
 				<Image src="/assets/images/dashboard.png" alt="Dashboard Image" width={1440} height={1150} className='auth-dashbpard-preview absolute top-0' />
 			</div>
 		</section>
+		<Toaster />
 	</main>
   )
 }

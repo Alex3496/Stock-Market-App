@@ -36,15 +36,18 @@ const page = () => {
 	const onSubmit = async (data: SignUpFormData) => {
 		try {
 			// Lógica para manejar el envío del formulario, como llamar a una API
+			data.country = 'US'; // Default country for now
 
 			const result = await signUpWithEmail(data);
 			if(result.success){
 				toast.success('Sign up successful! Please check your email for a welcome message.');
+				router.push('/')
 			}
 
 			console.log('Form Data:', data);
 		} catch (error) {
 			console.error('Error submitting form:', error);
+			toast.error('There was an error submitting the form. Please try again.');
 		}
 	}
 
