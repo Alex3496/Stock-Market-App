@@ -73,13 +73,26 @@ export const sendDailyNewsSummary = inngest.createFunction(
 
 		// Step 2: For each user, get their watchlist symbols and fetch news
 		const userNewsData = await step.run('fetch-user-news', async () => {
+			// Guardar la promesa de noticias generales para reutilizarla
+			let generalNewsPromise: Promise<MarketNewsArticle[]> | null = null;
+
 			const newsPromises = users.map(async (user) => {
 				try {
-					// Get user's watchlist symbols
+					// Obtiener los símbolos de la watchlist del usuario
 					const watchlistSymbols = await getWatchlistSymbolsByEmail(user.email);
 
-					// Fetch news (either for watchlist symbols or general market news)
-					const news = await getNews(watchlistSymbols.length > 0 ? watchlistSymbols : undefined);
+					let news: MarketNewsArticle[];
+
+					if (watchlistSymbols.length > 0) {
+						//noticias personalizadas
+						news = await getNews(watchlistSymbols);
+					} else {
+						//usuario sin watchlist, usar noticias generales
+						if (!generalNewsPromise) {
+							generalNewsPromise = getNews(undefined);
+						}
+						news = await generalNewsPromise;
+					}
 
 					return {
 						user,
