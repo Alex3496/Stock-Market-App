@@ -44,3 +44,12 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - [Google Ai Studio (api key)](https://aistudio.google.com) - AI Text generation (like ChatGPT)
 - [Nodemailer](https://nodemailer.com/about/) - Email sending library for Node.js
 - [Google App Passwords]() - To allow Nodemailer to send emails using Gmail SMTP
+
+
+## How to use inngest in this project in development mode
+
+1. Run the development server using `npm run dev`
+2. In a new terminal, run the Inngest CLI to listen for events and run functions
+```npx inngest-cli@latest dev
+```
+3. To see the events enter to http://localhost:8288
