@@ -20,11 +20,11 @@ import { cache } from 'react';
 import { POPULAR_STOCK_SYMBOLS, CRYPTO_SYMBOLS_FINNHUB } from '@/lib/constants';
 
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1';
-const NEXT_PUBLIC_FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
+const FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
 
-if (!NEXT_PUBLIC_FINNHUB_API_KEY) {
+if (!FINNHUB_API_KEY) {
 	throw new Error(
-		'NEXT_PUBLIC_FINNHUB_API_KEY is not defined in environment variables'
+		'FINNHUB_API_KEY is not defined in environment variables'
 	);
 }
 
@@ -100,7 +100,7 @@ export const getNews = async (
 					const symbol = cleanSymbols[i];
 
 					try {
-						const url = `${FINNHUB_BASE_URL}/company-news?symbol=${symbol}&from=${from}&to=${to}&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`;
+						const url = `${FINNHUB_BASE_URL}/company-news?symbol=${symbol}&from=${from}&to=${to}&token=${FINNHUB_API_KEY}`;
 						const rawArticles: RawNewsArticle[] = await fetchJSON(
 							url,
 							300
@@ -163,7 +163,7 @@ const getGeneralMarketNews = async (
 	to: string
 ): Promise<MarketNewsArticle[]> => {
 	try {
-		const url = `${FINNHUB_BASE_URL}/news?category=general&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`;
+		const url = `${FINNHUB_BASE_URL}/news?category=general&token=${FINNHUB_API_KEY}`;
 		const rawArticles: RawNewsArticle[] = await fetchJSON(url, 300); // Cache for 5 minutes
 
 		// Deduplicate by id, url, or headline
@@ -201,7 +201,7 @@ const getGeneralMarketNews = async (
  */
 export const searchCrypto = cache(async (query?: string): Promise<CryptoWithWatchlistStatus[]> => {
   try {
-    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    const token = FINNHUB_API_KEY;
     if (!token) {
       console.error('Error in crypto search:', new Error('FINNHUB API key is not configured'));
       return [];
@@ -273,7 +273,7 @@ export const searchCrypto = cache(async (query?: string): Promise<CryptoWithWatc
 export const searchStocks = cache(
 	async (query?: string): Promise<StockWithWatchlistStatus[]> => {
 		try {
-			const token = NEXT_PUBLIC_FINNHUB_API_KEY;
+			const token = FINNHUB_API_KEY;
 			if (!token) {
 				// If no token, log and return empty to avoid throwing per requirements
 				console.error(
@@ -404,7 +404,7 @@ export const searchAssets = cache(async (query?: string): Promise<AssetWithWatch
  */
 export const getCryptoPrice = cache(async (symbol: string): Promise<any> => {
   try {
-    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    const token = FINNHUB_API_KEY;
     if (!token) {
       console.error('Error in crypto price fetch:', new Error('FINNHUB API key is not configured'));
       return null;
@@ -434,7 +434,7 @@ export const getCryptoNews = async (cryptoSymbol?: string): Promise<MarketNewsAr
       ? [cryptoSymbol.replace('USD', '').toLowerCase()]
       : ['bitcoin', 'ethereum', 'crypto', 'cryptocurrency', 'blockchain'];
 
-    const url = `${FINNHUB_BASE_URL}/news?category=crypto&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`;
+    const url = `${FINNHUB_BASE_URL}/news?category=crypto&token=${FINNHUB_API_KEY}`;
     const rawArticles: RawNewsArticle[] = await fetchJSON(url, 300); // Cache for 5 minutes
 
     // Filtrar artículos que contengan términos relacionados con crypto
