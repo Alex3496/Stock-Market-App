@@ -58,7 +58,7 @@ declare global {
     type SearchCommandProps = {
         renderAs?: 'button' | 'text';
         label?: string;
-        initialStocks: StockWithWatchlistStatus[];
+        initialStocks: AssetWithWatchlistStatus[];
     };
 
     type WelcomeEmailData = {
@@ -80,9 +80,24 @@ declare global {
         type: string;
     };
 
+    type Crypto = {
+        symbol: string;
+        name: string;
+        exchange: string;
+        type: 'crypto';
+    };
+
+    type Asset = Stock | Crypto;
+
     type StockWithWatchlistStatus = Stock & {
         isInWatchlist: boolean;
     };
+
+    type CryptoWithWatchlistStatus = Crypto & {
+        isInWatchlist: boolean;
+    };
+
+    type AssetWithWatchlistStatus = StockWithWatchlistStatus | CryptoWithWatchlistStatus;
 
     type FinnhubSearchResult = {
         symbol: string;
