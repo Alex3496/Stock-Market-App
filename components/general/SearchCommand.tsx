@@ -23,13 +23,13 @@ import {
 	CommandShortcut,
 } from "@/components/ui/command";
 import Link from "next/link";
-import { searchStocks } from "@/lib/actions/finnhub.actions";
+import { searchAssets } from "@/lib/actions/finnhub.actions";
 import { useDebounce } from "@/hooks/usedebounce";
 
 type SearchCommandProps = {
 	visibility?: boolean;
 	children?: React.ReactNode;
-	initialStocks?: any[];
+	initialStocks?: AssetWithWatchlistStatus[];
 };
 
 export function SearchCommand({
@@ -41,10 +41,10 @@ export function SearchCommand({
 	const [loading, setLoading] = React.useState(false);
 	const [open, setOpen] = React.useState(visibility);
 	const [searchTerm, setSearchTerm] = React.useState("");
-	const [stocks, setStocks] = React.useState<StockWithWatchlistStatus[]>(initialStocks || []);
+	const [assets, setAssets] = React.useState<AssetWithWatchlistStatus[]>(initialStocks || []);
 
 	const isSearchMode = !!searchTerm.trim();
-	const displayStocks = isSearchMode ? stocks : stocks.slice(0, 10);
+	const displayAssets = isSearchMode ? assets : assets.slice(0, 10);
 
 	React.useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -60,15 +60,15 @@ export function SearchCommand({
 
 
 	const handleSearch = async () => {
-		// If no search term, reset to initial stocks
-		if(!isSearchMode) return setStocks(initialStocks || []);
+		// If no search term, reset to initial assets
+		if(!isSearchMode) return setAssets(initialStocks || []);
 
 		setLoading(true);
 		try{
-			const results = await searchStocks(searchTerm.trim())
-			setStocks(results);
+			const results = await searchAssets(searchTerm.trim())
+			setAssets(results);
 		}catch {
-			setStocks([]);
+			setAssets([]);
 		} finally {
 			setLoading(false);
 		}
@@ -80,10 +80,10 @@ export function SearchCommand({
 
 	const debouncedSearch = useDebounce(handleSearch, 300);
 
-	const handleSelectStock = () => {
+	const handleSelectAsset = () => {
 		setOpen(false);
 		setSearchTerm("");
-		setStocks(initialStocks || []);
+		setAssets(initialStocks || []);
 	}
 
 	return (
@@ -100,33 +100,33 @@ export function SearchCommand({
 			)}
 			<CommandDialog open={open} onOpenChange={setOpen} className="search-dialog">
 				<div className="search-field">
-					<CommandInput onValueChange={setSearchTerm} placeholder="Type a stock symbol or name..."  className="search-input"/>
+					<CommandInput onValueChange={setSearchTerm} placeholder="Type a stock or crypto symbol/name..."  className="search-input"/>
 					{ loading && <Loader2 className="search-loader" /> }
 				</div>
 				<CommandList className="search-list">
 					{ loading ? (<CommandEmpty>Loading...</CommandEmpty>) :
-						displayStocks?.length === 0 ? (
+						displayAssets?.length === 0 ? (
 							<div className="search-list-indicator">
-								{ isSearchMode ? "No results found." : "Type to search stocks." }
+								{ isSearchMode ? "No results found." : "Type to search stocks & crypto." }
 							</div>
 						) : (
 							<ul>
 								<div className="search-count">
-									{ isSearchMode ? 'Search Results ' : 'Top Stocks ' }
-									({  displayStocks.length || 0})
+									{ isSearchMode ? 'Search Results ' : 'Popular Assets ' }
+									({  displayAssets.length || 0})
 								</div>
-								{displayStocks?.map((stock) => (
-									<li key={stock?.symbol} className="search-item hover:bg-gray-600 pb-1 pt-1">
+								{displayAssets?.map((asset: AssetWithWatchlistStatus) => (
+									<li key={asset?.symbol} className="search-item hover:bg-gray-600 pb-1 pt-1">
 										<Link
-											href={`/stocks/${stock?.symbol}`}
-											onClick={handleSelectStock}
+											href={asset.type === 'crypto' ? `/crypto/${asset.symbol}` : `/stocks/${asset?.symbol}`}
+											onClick={handleSelectAsset}
 											className="search-item-link hover"
 										>
 											<TrendingUp className="h-4 w-4 text-gray-500" />
 											<div className="flex-1">
-												<div className="search-item-name">{stock?.name}</div>
+												<div className="search-item-name">{asset?.name}</div>
 												<div className="search-item-symbol text-sm text-gray-500">
-													{stock?.symbol} | {stock?.exchange} | {stock?.type}
+													{asset?.symbol} | {asset?.exchange} | {asset?.type}
 												</div>
 											</div>
 										</Link>

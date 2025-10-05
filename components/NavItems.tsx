@@ -26,34 +26,60 @@ const NavItems = () => {
 							<SearchCommand
 								initialStocks={[
 									{
+										symbol: "BTCUSD",
+										name: "Bitcoin",
+										exchange: "Crypto",
+										type: "crypto",
+										isInWatchlist: false,
+									},
+									{
+										symbol: "ETHUSD",
+										name: "Ethereum",
+										exchange: "Crypto",
+										type: "crypto",
+										isInWatchlist: false,
+									},
+									{
 										symbol: "AAPL",
 										name: "Apple Inc.",
 										exchange: "NASDAQ",
 										type: "stock",
+										isInWatchlist: false,
 									},
 									{
 										symbol: "GOOGL",
 										name: "Alphabet Inc.",
 										exchange: "NASDAQ",
 										type: "stock",
+										isInWatchlist: false,
 									},
 									{
 										symbol: "MSFT",
 										name: "Microsoft Corporation",
 										exchange: "NASDAQ",
 										type: "stock",
+										isInWatchlist: false,
 									},
 									{
 										symbol: "AMZN",
 										name: "Amazon.com Inc.",
 										exchange: "NASDAQ",
 										type: "stock",
+										isInWatchlist: false,
 									},
 									{
 										symbol: "TSLA",
 										name: "Tesla Inc.",
 										exchange: "NASDAQ",
 										type: "stock",
+										isInWatchlist: false,
+									},
+									{
+										symbol: "SOLUSD",
+										name: "Solana",
+										exchange: "Crypto", 
+										type: "crypto",
+										isInWatchlist: false,
 									},
 								]}
 							>

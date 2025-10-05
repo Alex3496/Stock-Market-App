@@ -17,7 +17,7 @@ import {
 } from '@/lib/utils';
 
 import { cache } from 'react';
-import { POPULAR_STOCK_SYMBOLS } from '@/lib/constants';
+import { POPULAR_STOCK_SYMBOLS, CRYPTO_SYMBOLS_FINNHUB } from '@/lib/constants';
 
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1';
 const NEXT_PUBLIC_FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
@@ -194,6 +194,70 @@ const getGeneralMarketNews = async (
 };
 
 
+/**
+ * Busca criptomonedas usando símbolos populares predefinidos
+ * @param query - Término de búsqueda opcional
+ * @returns Promise con array de criptomonedas con estado de watchlist
+ */
+export const searchCrypto = cache(async (query?: string): Promise<CryptoWithWatchlistStatus[]> => {
+  try {
+    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) {
+      console.error('Error in crypto search:', new Error('FINNHUB API key is not configured'));
+      return [];
+    }
+
+    const trimmed = typeof query === 'string' ? query.trim().toLowerCase() : '';
+
+    // Mapeo de nombres de criptomonedas comunes
+    const cryptoNames: { [key: string]: string } = {
+      'BTCUSD': 'Bitcoin',
+      'ETHUSD': 'Ethereum',
+      'BNBUSD': 'Binance Coin',
+      'XRPUSD': 'Ripple',
+      'ADAUSD': 'Cardano',
+      'SOLUSD': 'Solana',
+      'DOTUSD': 'Polkadot',
+      'DOGEUSD': 'Dogecoin',
+      'AVAXUSD': 'Avalanche',
+      'SHIBUSD': 'Shiba Inu',
+      'MATICUSD': 'Polygon',
+      'LINKUSD': 'Chainlink',
+      'LTCUSD': 'Litecoin',
+      'UNIUSD': 'Uniswap',
+      'ATOMUSD': 'Cosmos',
+    };
+
+    let filteredCryptos = CRYPTO_SYMBOLS_FINNHUB;
+
+    // Si hay una consulta, filtrar por símbolos o nombres que coincidan
+    if (trimmed) {
+      filteredCryptos = CRYPTO_SYMBOLS_FINNHUB.filter(symbol => {
+        const name = cryptoNames[symbol]?.toLowerCase() || '';
+        return symbol.toLowerCase().includes(trimmed) ||
+               name.includes(trimmed) ||
+               symbol.replace('USD', '').toLowerCase().includes(trimmed);
+      });
+    }
+
+    // Tomar solo los primeros 10 para no sobrecargar
+    const topCryptos = filteredCryptos.slice(0, 10);
+
+    const results: CryptoWithWatchlistStatus[] = topCryptos.map(symbol => ({
+      symbol: symbol,
+      name: cryptoNames[symbol] || symbol.replace('USD', ''),
+      exchange: 'Crypto',
+      type: 'crypto' as const,
+      isInWatchlist: false,
+    }));
+
+    return results;
+  } catch (err) {
+    console.error('Error in crypto search:', err);
+    return [];
+  }
+});
+
 export const searchStocks = cache(async (query?: string): Promise<StockWithWatchlistStatus[]> => {
   try {
     const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
@@ -274,3 +338,99 @@ export const searchStocks = cache(async (query?: string): Promise<StockWithWatch
     return [];
   }
 });
+
+/**
+ * Busca tanto acciones como criptomonedas combinando ambos resultados
+ * @param query - Término de búsqueda opcional
+ * @returns Promise con array combinado de activos con estado de watchlist
+ */
+export const searchAssets = cache(async (query?: string): Promise<AssetWithWatchlistStatus[]> => {
+  try {
+    // Ejecutar búsquedas en paralelo
+    const [stocks, cryptos] = await Promise.all([
+      searchStocks(query),
+      searchCrypto(query)
+    ]);
+
+    // Combinar resultados, priorizando acciones si no hay query específica
+    const combined: AssetWithWatchlistStatus[] = [...stocks, ...cryptos];
+
+    // Limitar a 20 resultados totales
+    return combined.slice(0, 20);
+  } catch (err) {
+    console.error('Error in asset search:', err);
+    return [];
+  }
+});
+
+/**
+ * Obtiene el precio actual de una criptomoneda desde Finnhub API
+ * @param symbol - Símbolo de la criptomoneda (ej: BTCUSD)
+ * @returns Promise con información del precio
+ */
+export const getCryptoPrice = cache(async (symbol: string): Promise<any> => {
+  try {
+    const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
+    if (!token) {
+      console.error('Error in crypto price fetch:', new Error('FINNHUB API key is not configured'));
+      return null;
+    }
+
+    const url = `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(symbol)}&token=${token}`;
+    const data = await fetchJSON(url, 60); // Cache for 1 minute
+
+    return data;
+  } catch (err) {
+    console.error('Error fetching crypto price:', err);
+    return null;
+  }
+});
+
+/**
+ * Obtiene noticias relacionadas con criptomonedas usando términos de búsqueda específicos
+ * @param cryptoSymbol - Símbolo de la criptomoneda (opcional)
+ * @returns Promise con array de artículos de noticias crypto
+ */
+export const getCryptoNews = async (cryptoSymbol?: string): Promise<MarketNewsArticle[]> => {
+  try {
+    const { from, to } = getDateRange(7); // Last 7 days for crypto news
+
+    // Términos de búsqueda para noticias de crypto
+    const cryptoTerms = cryptoSymbol
+      ? [cryptoSymbol.replace('USD', '').toLowerCase()]
+      : ['bitcoin', 'ethereum', 'crypto', 'cryptocurrency', 'blockchain'];
+
+    const url = `${FINNHUB_BASE_URL}/news?category=crypto&token=${NEXT_PUBLIC_FINNHUB_API_KEY}`;
+    const rawArticles: RawNewsArticle[] = await fetchJSON(url, 300); // Cache for 5 minutes
+
+    // Filtrar artículos que contengan términos relacionados con crypto
+    const filteredArticles = rawArticles.filter(article => {
+      if (!validateArticle(article)) return false;
+
+      const searchText = (article.headline + ' ' + (article.summary || '')).toLowerCase();
+      return cryptoTerms.some(term => searchText.includes(term));
+    });
+
+    // Deduplicate by id, url, or headline
+    const seenIds = new Set<string>();
+    const uniqueArticles: RawNewsArticle[] = [];
+
+    for (const article of filteredArticles) {
+      const uniqueKey = article.id?.toString() || article.url || article.headline;
+      if (uniqueKey && !seenIds.has(uniqueKey)) {
+        seenIds.add(uniqueKey);
+        uniqueArticles.push(article);
+      }
+    }
+
+    // Take top 6 and format them
+    return uniqueArticles
+      .slice(0, 6)
+      .map((article, index) =>
+        formatArticle(article, false, cryptoSymbol, index)
+      );
+  } catch (error) {
+    console.error('Error fetching crypto news:', error);
+    throw new Error('Failed to fetch crypto news');
+  }
+};

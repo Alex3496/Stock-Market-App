@@ -326,6 +326,73 @@ export const POPULAR_STOCK_SYMBOLS = [
     'SE',
 ];
 
+export const POPULAR_CRYPTO_SYMBOLS = [
+    // Major Cryptocurrencies
+    'BINANCE:BTCUSDT',  // Bitcoin
+    'BINANCE:ETHUSDT',  // Ethereum
+    'BINANCE:BNBUSDT',  // Binance Coin
+    'BINANCE:XRPUSDT',  // Ripple
+    'BINANCE:ADAUSDT',  // Cardano
+    'BINANCE:SOLUSDT',  // Solana
+    'BINANCE:DOTUSDT',  // Polkadot
+    'BINANCE:DOGEUSDT', // Dogecoin
+    'BINANCE:AVAXUSDT', // Avalanche
+    'BINANCE:SHIBUSDT', // Shiba Inu
+    'BINANCE:MATICUSDT',// Polygon
+    'BINANCE:LINKUSDT', // Chainlink
+    'BINANCE:LTCUSDT',  // Litecoin
+    'BINANCE:UNIUSDT',  // Uniswap
+    'BINANCE:ATOMUSDT', // Cosmos
+];
+
+// Crypto symbols without exchange prefix for Finnhub API
+export const CRYPTO_SYMBOLS_FINNHUB = [
+    'BTCUSD',
+    'ETHUSD',
+    'BNBUSD',
+    'XRPUSD',
+    'ADAUSD',
+    'SOLUSD',
+    'DOTUSD',
+    'DOGEUSD',
+    'AVAXUSD',
+    'SHIBUSD',
+    'MATICUSD',
+    'LINKUSD',
+    'LTCUSD',
+    'UNIUSD',
+    'ATOMUSD',
+];
+
+/**
+ * Configuración específica para gráficos de criptomonedas usando TradingView
+ */
+export const CRYPTO_CHART_WIDGET_CONFIG = (symbol: string) => ({
+    allow_symbol_change: false,
+    calendar: false,
+    details: true,
+    hide_side_toolbar: true,
+    hide_top_toolbar: false,
+    hide_legend: false,
+    hide_volume: false,
+    hotlist: false,
+    interval: 'D',
+    locale: 'en',
+    save_image: false,
+    style: 1,
+    symbol: `BINANCE:${symbol.replace('USD', 'USDT')}`, // Usar Binance como exchange
+    theme: 'dark',
+    timezone: 'Etc/UTC',
+    backgroundColor: '#141414',
+    gridColor: '#141414',
+    watchlist: [],
+    withdateranges: false,
+    compareSymbols: [],
+    studies: [],
+    width: '100%',
+    height: 600,
+});
+
 export const NO_MARKET_NEWS =
     '<p class="mobile-text" style="margin:0 0 20px 0;font-size:16px;line-height:1.6;color:#4b5563;">No market news available today. Please check back tomorrow.</p>';
 
