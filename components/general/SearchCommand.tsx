@@ -58,7 +58,7 @@ export function SearchCommand({
 		return () => document.removeEventListener("keydown", down);
 	}, []);
 
-
+	//se ejecuta la busqueda, con debounce
 	const handleSearch = async () => {
 		// If no search term, reset to initial assets
 		if(!isSearchMode) return setAssets(initialStocks || []);
